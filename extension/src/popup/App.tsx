@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Brain, Activity, Settings, Clock } from 'lucide-react';
+import { Brain, Activity, Settings, Clock, Camera, Mic } from 'lucide-react';
 import type { BrowsingSession, UserSettings } from '@/types';
 import { Storage } from '@/utils/storage';
+import { AudioControls } from '@/components/AudioControls';
+import { ScreenshotGallery } from '@/components/ScreenshotGallery';
+import { PermissionRequest } from '@/components/PermissionRequest';
+import type { Permission } from '@/utils/permissions';
 
 function App() {
   const [currentSession, setCurrentSession] = useState<BrowsingSession | null>(null);
   const [settings, setSettings] = useState<UserSettings | null>(null);
-  const [activeTab, setActiveTab] = useState<'activity' | 'insights' | 'settings'>('activity');
+  const [activeTab, setActiveTab] = useState<'activity' | 'captures' | 'insights'>('activity');
+  const [pendingPermission, setPendingPermission] = useState<Permission | null>(null);
 
   useEffect(() => {
     loadData();
@@ -123,6 +128,16 @@ function App() {
           Activity
         </button>
         <button
+          onClick={() => setActiveTab('captures')}
+          className={`flex-1 py-3 px-4 text-sm font-medium transition ${
+            activeTab === 'captures'
+              ? 'text-primary-600 border-b-2 border-primary-600'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+          }`}
+        >
+          Captures
+        </button>
+        <button
           onClick={() => setActiveTab('insights')}
           className={`flex-1 py-3 px-4 text-sm font-medium transition ${
             activeTab === 'insights'
@@ -194,6 +209,28 @@ function App() {
           </div>
         )}
 
+        {activeTab === 'captures' && (
+          <div className="space-y-6">
+            {/* Audio Captures */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                <Mic className="w-4 h-4" />
+                Audio Recordings
+              </h3>
+              <AudioControls />
+            </div>
+
+            {/* Screenshots */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                <Camera className="w-4 h-4" />
+                Screenshots
+              </h3>
+              <ScreenshotGallery />
+            </div>
+          </div>
+        )}
+
         {activeTab === 'insights' && (
           <div className="text-center py-12">
             <Brain className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -208,6 +245,15 @@ function App() {
           TwinMind v0.1.0 • Amplifying human cognition
         </div>
       </div>
+
+      {/* Permission Request Modal */}
+      {pendingPermission && (
+        <PermissionRequest
+          permission={pendingPermission}
+          onGranted={() => setPendingPermission(null)}
+          onDenied={() => setPendingPermission(null)}
+        />
+      )}
     </div>
   );
 }

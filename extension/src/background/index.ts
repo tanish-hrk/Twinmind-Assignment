@@ -2,7 +2,8 @@
 
 import { Logger } from '@/utils/logger';
 import { Storage } from '@/utils/storage';
-import type { TabEvent, BrowsingSession, UserSettings } from '@/types';
+import { ScreenshotManager } from '@/utils/screenshot';
+import type { TabEvent, BrowsingSession, UserSettings, FormData } from '@/types';
 
 const logger = new Logger('Background');
 
@@ -201,10 +202,58 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   } else if (message.type === 'GET_SETTINGS') {
     Storage.get<UserSettings>('settings').then(sendResponse);
     return true; // Keep channel open for async response
+  } else if (message.type === 'FORM_SUBMITTED') {
+    // Handle form submission data
+    handleFormSubmission(message.formData as FormData);
+  } else if (message.type === 'CAPTURE_SCREENSHOT') {
+    // Capture screenshot with trigger
+    handleScreenshotCapture(message.trigger);
   }
 
   return false;
 });
+
+// Handle form submission
+async function handleFormSubmission(formData: FormData): Promise<void> {
+  try {
+    logger.log('Form submitted:', formData.formId || 'unnamed');
+
+    const formSubmissions = (await Storage.get<FormData[]>('formSubmissions')) || [];
+    formSubmissions.push(formData);
+
+    // Keep only last 50 submissions
+    if (formSubmissions.length > 50) {
+      formSubmissions.splice(0, formSubmissions.length - 50);
+    }
+
+    await Storage.set('formSubmissions', formSubmissions);
+  } catch (error) {
+    logger.error('Error saving form submission:', error);
+  }
+}
+
+// Handle screenshot capture
+async function handleScreenshotCapture(trigger: string): Promise<void> {
+  try {
+    const settings = await Storage.get<UserSettings>('settings');
+
+    if (!settings?.screenshotEnabled) {
+      logger.log('Screenshot capture disabled in settings');
+      return;
+    }
+
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab.id || !tab.url) return;
+
+    await ScreenshotManager.captureWithTrigger(
+      tab.id,
+      trigger as 'manual' | 'form_submit' | 'error' | 'key_moment'
+    );
+    logger.log('Screenshot captured with trigger:', trigger);
+  } catch (error) {
+    logger.error('Error capturing screenshot:', error);
+  }
+}
 
 // Initialize on startup
 startNewSession();

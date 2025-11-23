@@ -10,18 +10,23 @@ import {
   Sun,
   Trash2,
   Save,
+  Check,
+  X,
 } from 'lucide-react';
 import type { UserSettings, StorageStats } from '@/types';
 import { Storage } from '@/utils/storage';
+import { PermissionManager, type Permission } from '@/utils/permissions';
 
 function Options() {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
   const [saved, setSaved] = useState(false);
+  const [permissions, setPermissions] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     loadSettings();
     loadStorageStats();
+    loadPermissions();
   }, []);
 
   const loadSettings = async () => {
@@ -39,6 +44,29 @@ function Options() {
       itemCount: 0,
       lastCleanup: Date.now(),
     });
+  };
+
+  const loadPermissions = async () => {
+    const audioGranted = await PermissionManager.isGranted('audioCapture');
+    const tabCaptureGranted = await PermissionManager.isGranted('tabCapture');
+    setPermissions({
+      audioCapture: audioGranted,
+      tabCapture: tabCaptureGranted,
+    });
+  };
+
+  const handlePermissionToggle = async (permission: Permission) => {
+    const isGranted = permissions[permission];
+
+    if (isGranted) {
+      // Revoke permission
+      await PermissionManager.revoke(permission);
+      setPermissions({ ...permissions, [permission]: false });
+    } else {
+      // Request permission
+      const granted = await PermissionManager.request(permission);
+      setPermissions({ ...permissions, [permission]: granted });
+    }
   };
 
   const handleSave = async () => {
@@ -96,9 +124,7 @@ function Options() {
           <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
               <Database className="w-5 h-5 text-primary-600" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Data Capture
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Data Capture</h2>
             </div>
 
             <div className="space-y-4">
@@ -129,9 +155,7 @@ function Options() {
                 <div className="flex items-center gap-2">
                   <Mic className="w-4 h-4 text-gray-400" />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      Audio Capture
-                    </div>
+                    <div className="font-medium text-gray-900 dark:text-white">Audio Capture</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       Capture and transcribe audio
                     </div>
@@ -164,9 +188,7 @@ function Options() {
                   </div>
                 </div>
                 <button
-                  onClick={() =>
-                    updateSetting('screenshotEnabled', !settings.screenshotEnabled)
-                  }
+                  onClick={() => updateSetting('screenshotEnabled', !settings.screenshotEnabled)}
                   className={`relative w-12 h-6 rounded-full transition ${
                     settings.screenshotEnabled ? 'bg-primary-600' : 'bg-gray-300'
                   }`}
@@ -183,9 +205,7 @@ function Options() {
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-gray-400" />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      Form Tracking
-                    </div>
+                    <div className="font-medium text-gray-900 dark:text-white">Form Tracking</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       Track form inputs (excluding passwords)
                     </div>
@@ -209,6 +229,90 @@ function Options() {
             </div>
           </section>
 
+          {/* Permissions Management */}
+          <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="w-5 h-5 text-primary-600" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Permissions</h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="font-medium text-blue-900 dark:text-blue-100">
+                      Audio Capture Permission
+                    </div>
+                  </div>
+                  <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Required for recording and transcribing audio from tabs
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {permissions.audioCapture ? (
+                    <>
+                      <Check className="w-5 h-5 text-green-600" />
+                      <button
+                        onClick={() => handlePermissionToggle('audioCapture')}
+                        className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition"
+                      >
+                        Revoke
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <X className="w-5 h-5 text-gray-400" />
+                      <button
+                        onClick={() => handlePermissionToggle('audioCapture')}
+                        className="px-3 py-1.5 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded transition"
+                      >
+                        Grant
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="font-medium text-blue-900 dark:text-blue-100">
+                      Tab Capture Permission
+                    </div>
+                  </div>
+                  <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Required for capturing screenshots and visual context
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {permissions.tabCapture ? (
+                    <>
+                      <Check className="w-5 h-5 text-green-600" />
+                      <button
+                        onClick={() => handlePermissionToggle('tabCapture')}
+                        className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition"
+                      >
+                        Revoke
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <X className="w-5 h-5 text-gray-400" />
+                      <button
+                        onClick={() => handlePermissionToggle('tabCapture')}
+                        className="px-3 py-1.5 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded transition"
+                      >
+                        Grant
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Privacy Settings */}
           <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -228,9 +332,7 @@ function Options() {
                   min="1"
                   max="365"
                   value={settings.dataRetentionDays}
-                  onChange={(e) =>
-                    updateSetting('dataRetentionDays', parseInt(e.target.value))
-                  }
+                  onChange={(e) => updateSetting('dataRetentionDays', parseInt(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -244,9 +346,7 @@ function Options() {
                 </label>
                 <textarea
                   value={settings.excludedDomains.join('\n')}
-                  onChange={(e) =>
-                    updateSetting('excludedDomains', e.target.value.split('\n'))
-                  }
+                  onChange={(e) => updateSetting('excludedDomains', e.target.value.split('\n'))}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
                   placeholder="chrome://&#10;chrome-extension://&#10;banking.example.com"
@@ -262,9 +362,7 @@ function Options() {
           <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
               <Sun className="w-5 h-5 text-primary-600" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Appearance
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Appearance</h2>
             </div>
 
             <div className="flex gap-3">
@@ -293,9 +391,7 @@ function Options() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Database className="w-5 h-5 text-primary-600" />
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Storage
-                </h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Storage</h2>
               </div>
               <button
                 onClick={handleClearData}
@@ -309,9 +405,7 @@ function Options() {
             {storageStats && (
               <div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Storage Used
-                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">Storage Used</span>
                   <span className="font-medium text-gray-900 dark:text-white">
                     {(storageStats.usedSize / 1024 / 1024).toFixed(2)} MB / 10 MB
                   </span>
@@ -334,9 +428,7 @@ function Options() {
           <button
             onClick={handleSave}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition ${
-              saved
-                ? 'bg-green-600 text-white'
-                : 'bg-primary-600 hover:bg-primary-700 text-white'
+              saved ? 'bg-green-600 text-white' : 'bg-primary-600 hover:bg-primary-700 text-white'
             }`}
           >
             <Save className="w-5 h-5" />
