@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="22" fill="#0ea5e9"/>
+  <path d="M 16.799999999999997 19.200000000000003 Q 24 12 31.200000000000003 19.200000000000003" stroke="white" stroke-width="2.4000000000000004" fill="none"/>
+  <circle cx="19.200000000000003" cy="24" r="3.84" fill="white"/>
+  <circle cx="28.799999999999997" cy="24" r="3.84" fill="white"/>
+  <path d="M 14.399999999999999 33.599999999999994 Q 24 38.400000000000006 33.599999999999994 33.599999999999994" stroke="white" stroke-width="2.4000000000000004" fill="none"/>
+</svg>
