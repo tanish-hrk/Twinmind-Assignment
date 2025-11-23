@@ -38,7 +38,7 @@ export class VisualizationEngine {
   static generateTimeline(tabs: TabEvent[]): TimelineData[] {
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
-    
+
     // Initialize 24 hours
     const timeline: TimelineData[] = [];
     for (let i = 0; i < 24; i++) {
@@ -52,8 +52,8 @@ export class VisualizationEngine {
 
     // Count tabs per hour
     tabs
-      .filter(tab => tab.timestamp >= oneDayAgo)
-      .forEach(tab => {
+      .filter((tab) => tab.timestamp >= oneDayAgo)
+      .forEach((tab) => {
         const hourIndex = Math.floor((tab.timestamp - oneDayAgo) / (60 * 60 * 1000));
         if (hourIndex >= 0 && hourIndex < 24) {
           timeline[hourIndex].count++;
@@ -66,14 +66,11 @@ export class VisualizationEngine {
   /**
    * Get top domains by visit count
    */
-  static getTopDomains(
-    tabs: TabEvent[],
-    limit: number = 10
-  ): DomainStat[] {
+  static getTopDomains(tabs: TabEvent[], limit: number = 10): DomainStat[] {
     const domainCounts = new Map<string, number>();
 
     // Count occurrences
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       try {
         const hostname = new URL(tab.url).hostname;
         domainCounts.set(hostname, (domainCounts.get(hostname) || 0) + 1);
@@ -127,7 +124,7 @@ export class VisualizationEngine {
       const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
 
       const count = tabs.filter(
-        tab => tab.timestamp >= dayStart.getTime() && tab.timestamp < dayEnd.getTime()
+        (tab) => tab.timestamp >= dayStart.getTime() && tab.timestamp < dayEnd.getTime()
       ).length;
 
       days.push({
@@ -145,9 +142,11 @@ export class VisualizationEngine {
    */
   static getActivityHeatmap(tabs: TabEvent[]): number[][] {
     // 7 days x 24 hours
-    const heatmap: number[][] = Array(7).fill(0).map(() => Array(24).fill(0));
+    const heatmap: number[][] = Array(7)
+      .fill(0)
+      .map(() => Array(24).fill(0));
 
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       const date = new Date(tab.timestamp);
       const day = date.getDay(); // 0 = Sunday
       const hour = date.getHours();
@@ -163,9 +162,9 @@ export class VisualizationEngine {
   static getAverageSessionDuration(tabs: TabEvent[]): number {
     const sessions = new Map<string, { start: number; end: number }>();
 
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       if (!tab.url) return;
-      
+
       const existing = sessions.get(tab.url);
       if (!existing || tab.timestamp < existing.start) {
         sessions.set(tab.url, {
@@ -179,8 +178,10 @@ export class VisualizationEngine {
 
     if (sessions.size === 0) return 0;
 
-    const totalDuration = Array.from(sessions.values())
-      .reduce((sum, session) => sum + (session.end - session.start), 0);
+    const totalDuration = Array.from(sessions.values()).reduce(
+      (sum, session) => sum + (session.end - session.start),
+      0
+    );
 
     return totalDuration / sessions.size;
   }
@@ -238,27 +239,25 @@ export class VisualizationEngine {
 
     // Most active hour
     const hourCounts = new Map<number, number>();
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       const hour = new Date(tab.timestamp).getHours();
       hourCounts.set(hour, (hourCounts.get(hour) || 0) + 1);
     });
-    const mostActiveHour = Array.from(hourCounts.entries())
-      .sort((a, b) => b[1] - a[1])[0][0];
+    const mostActiveHour = Array.from(hourCounts.entries()).sort((a, b) => b[1] - a[1])[0][0];
 
     // Most active day
     const dayCounts = new Map<number, number>();
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       const day = new Date(tab.timestamp).getDay();
       dayCounts.set(day, (dayCounts.get(day) || 0) + 1);
     });
-    const mostActiveDayNum = Array.from(dayCounts.entries())
-      .sort((a, b) => b[1] - a[1])[0][0];
+    const mostActiveDayNum = Array.from(dayCounts.entries()).sort((a, b) => b[1] - a[1])[0][0];
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const mostActiveDay = dayNames[mostActiveDayNum];
 
     // Total unique sites
     const uniqueDomains = new Set<string>();
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       try {
         uniqueDomains.add(new URL(tab.url).hostname);
       } catch {
@@ -267,9 +266,10 @@ export class VisualizationEngine {
     });
 
     // Average tabs per hour
-    const timeRange = tabs.length > 0 
-      ? (Math.max(...tabs.map(t => t.timestamp)) - Math.min(...tabs.map(t => t.timestamp)))
-      : 0;
+    const timeRange =
+      tabs.length > 0
+        ? Math.max(...tabs.map((t) => t.timestamp)) - Math.min(...tabs.map((t) => t.timestamp))
+        : 0;
     const hours = timeRange / (60 * 60 * 1000);
     const averageTabsPerHour = hours > 0 ? tabs.length / hours : 0;
 

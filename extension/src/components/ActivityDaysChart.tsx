@@ -8,14 +8,12 @@ interface ActivityDaysChartProps {
 }
 
 export function ActivityDaysChart({ data }: ActivityDaysChartProps) {
-  const maxCount = useMemo(() => Math.max(...data.map(d => d.count), 1), [data]);
+  const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          Weekly Activity
-        </h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Weekly Activity</h3>
         <span className="text-xs text-gray-500">Last 7 days</span>
       </div>
 
@@ -27,10 +25,7 @@ export function ActivityDaysChart({ data }: ActivityDaysChartProps) {
             const isToday = index === data.length - 1;
 
             return (
-              <div
-                key={day.timestamp}
-                className="flex-1 flex flex-col items-center gap-2 group"
-              >
+              <div key={day.timestamp} className="flex-1 flex flex-col items-center gap-2 group">
                 {/* Bar */}
                 <div className="w-full flex items-end justify-center" style={{ height: '100%' }}>
                   <div

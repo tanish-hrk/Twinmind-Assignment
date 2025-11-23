@@ -31,10 +31,10 @@ export function SearchResults({
   // Combine and paginate all results
   const allResults = useMemo(() => {
     return [
-      ...tabs.map(r => ({ ...r, type: 'tab' as const })),
-      ...screenshots.map(r => ({ ...r, type: 'screenshot' as const })),
-      ...forms.map(r => ({ ...r, type: 'form' as const })),
-      ...audio.map(r => ({ ...r, type: 'audio' as const })),
+      ...tabs.map((r) => ({ ...r, type: 'tab' as const })),
+      ...screenshots.map((r) => ({ ...r, type: 'screenshot' as const })),
+      ...forms.map((r) => ({ ...r, type: 'form' as const })),
+      ...audio.map((r) => ({ ...r, type: 'audio' as const })),
     ].sort((a, b) => b.score - a.score);
   }, [tabs, screenshots, forms, audio]);
 
@@ -82,11 +82,16 @@ export function SearchResults({
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'tab': return <Globe className="w-3 h-3" />;
-      case 'screenshot': return <Camera className="w-3 h-3" />;
-      case 'form': return <FileText className="w-3 h-3" />;
-      case 'audio': return <Mic className="w-3 h-3" />;
-      default: return null;
+      case 'tab':
+        return <Globe className="w-3 h-3" />;
+      case 'screenshot':
+        return <Camera className="w-3 h-3" />;
+      case 'form':
+        return <FileText className="w-3 h-3" />;
+      case 'audio':
+        return <Mic className="w-3 h-3" />;
+      default:
+        return null;
     }
   };
 
@@ -119,7 +124,7 @@ export function SearchResults({
       <div className="space-y-2">
         {paginatedResults.map((result, index) => {
           const item = result.item as TabEvent & Screenshot & FormData & AudioCapture;
-          
+
           return (
             <div
               key={`${result.type}-${item.id || index}`}
@@ -135,17 +140,17 @@ export function SearchResults({
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${getTypeBadge(result.type)}`}>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${getTypeBadge(result.type)}`}
+                    >
                       {getTypeIcon(result.type)}
                       {result.type}
                     </span>
                     {result.score > 1 && (
-                      <span className="text-xs text-gray-400">
-                        Score: {result.score}
-                      </span>
+                      <span className="text-xs text-gray-400">Score: {result.score}</span>
                     )}
                   </div>
-                  
+
                   {result.type === 'tab' && (
                     <>
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -177,7 +182,8 @@ export function SearchResults({
                         {(item as FormData).url}
                       </div>
                       <div className="text-xs text-gray-400 mt-1">
-                        {(item as FormData).fields.length} field{(item as FormData).fields.length !== 1 ? 's' : ''}
+                        {(item as FormData).fields.length} field
+                        {(item as FormData).fields.length !== 1 ? 's' : ''}
                       </div>
                     </>
                   )}
@@ -193,9 +199,7 @@ export function SearchResults({
                     </>
                   )}
 
-                  <div className="text-xs text-gray-400 mt-1">
-                    {formatDate(item.timestamp)}
-                  </div>
+                  <div className="text-xs text-gray-400 mt-1">{formatDate(item.timestamp)}</div>
                 </div>
               </div>
             </div>

@@ -24,9 +24,7 @@ export function TopDomainsChart({ data }: TopDomainsChartProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-        Most Visited Sites
-      </h3>
+      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Most Visited Sites</h3>
 
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
         {data.map((item, index) => (
@@ -34,9 +32,7 @@ export function TopDomainsChart({ data }: TopDomainsChartProps) {
             {/* Domain info */}
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-600 dark:text-gray-400">
-                  #{index + 1}
-                </span>
+                <span className="font-medium text-gray-600 dark:text-gray-400">#{index + 1}</span>
                 <span className="text-gray-900 dark:text-gray-100 truncate max-w-[180px]">
                   {item.domain}
                 </span>

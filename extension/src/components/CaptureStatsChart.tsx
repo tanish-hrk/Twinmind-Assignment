@@ -19,19 +19,13 @@ export function CaptureStatsChart({ stats }: CaptureStatsChartProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-        Capture Statistics
-      </h3>
+      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Capture Statistics</h3>
 
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
         {/* Total */}
         <div className="text-center mb-4">
-          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {totalCount}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            Total Items Captured
-          </div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">Total Items Captured</div>
         </div>
 
         {/* Stats grid */}

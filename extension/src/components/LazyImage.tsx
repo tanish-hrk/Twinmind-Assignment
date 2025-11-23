@@ -72,9 +72,7 @@ export function LazyImage({ src, alt, className = '', thumbnailSrc, onLoad }: La
       )}
 
       {/* Loading placeholder */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse" />
-      )}
+      {!isLoaded && <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse" />}
 
       {/* Actual image */}
       {isInView && (
