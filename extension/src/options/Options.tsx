@@ -47,10 +47,8 @@ function Options() {
   };
 
   const loadPermissions = async () => {
-    const audioGranted = await PermissionManager.isGranted('audioCapture');
     const tabCaptureGranted = await PermissionManager.isGranted('tabCapture');
     setPermissions({
-      audioCapture: audioGranted,
       tabCapture: tabCaptureGranted,
     });
   };
@@ -237,43 +235,6 @@ function Options() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Mic className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <div className="font-medium text-blue-900 dark:text-blue-100">
-                      Audio Capture Permission
-                    </div>
-                  </div>
-                  <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                    Required for recording and transcribing audio from tabs
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {permissions.audioCapture ? (
-                    <>
-                      <Check className="w-5 h-5 text-green-600" />
-                      <button
-                        onClick={() => handlePermissionToggle('audioCapture')}
-                        className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition"
-                      >
-                        Revoke
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <X className="w-5 h-5 text-gray-400" />
-                      <button
-                        onClick={() => handlePermissionToggle('audioCapture')}
-                        className="px-3 py-1.5 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded transition"
-                      >
-                        Grant
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
               <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <div>
                   <div className="flex items-center gap-2">

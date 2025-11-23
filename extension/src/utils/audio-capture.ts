@@ -25,14 +25,16 @@ export class AudioCaptureManager {
         return null;
       }
 
-      // Get media stream from stream ID
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          mandatory: {
-            chromeMediaSource: 'tab',
-            chromeMediaSourceId: streamId,
-          },
-        } as MediaTrackConstraints,
+      // Note: Audio capture from tabs requires using the stream directly from chrome.tabCapture
+      // For now, we'll use a simplified approach that works with tabCapture permission
+      const stream = await new Promise<MediaStream>((resolve, reject) => {
+        chrome.tabCapture.capture({ audio: true, video: false }, (capturedStream) => {
+          if (chrome.runtime.lastError || !capturedStream) {
+            reject(new Error('Failed to capture audio stream'));
+            return;
+          }
+          resolve(capturedStream);
+        });
       });
 
       // Create audio capture record

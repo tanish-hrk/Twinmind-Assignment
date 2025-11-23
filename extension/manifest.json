@@ -32,8 +32,7 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["storage", "tabs", "activeTab", "scripting", "alarms", "idle"],
-  "optional_permissions": ["tabCapture", "audioCapture"],
+  "permissions": ["storage", "tabs", "activeTab", "scripting", "alarms", "idle", "tabCapture"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "options_page": "src/options/index.html",
   "web_accessible_resources": [

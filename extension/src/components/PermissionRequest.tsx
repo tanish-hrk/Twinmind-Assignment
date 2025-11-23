@@ -1,7 +1,7 @@
 // Permission request component
 
 import { useState } from 'react';
-import { Shield, Mic, Camera, Check, X } from 'lucide-react';
+import { Shield, Camera, Check, X } from 'lucide-react';
 import { PermissionManager, type Permission } from '@/utils/permissions';
 
 interface PermissionInfo {
@@ -19,13 +19,6 @@ const PERMISSIONS: PermissionInfo[] = [
     description: 'Capture screenshots and visual context from your browsing',
     icon: <Camera className="w-5 h-5" />,
     why: 'Helps remember what you saw on important pages',
-  },
-  {
-    permission: 'audioCapture',
-    title: 'Audio Capture',
-    description: 'Record and transcribe audio from tabs (videos, meetings)',
-    icon: <Mic className="w-5 h-5" />,
-    why: 'Enables AI-powered transcription and audio insights',
   },
 ];
 

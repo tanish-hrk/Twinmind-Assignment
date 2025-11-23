@@ -99,7 +99,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
 
     const tabEvent: TabEvent = {
-      id: `tab_${Date.now()}_${tabId}`,
+      id: `tab_updated_${Date.now()}_${tabId}_${Math.random().toString(36).substr(2, 9)}`,
       tabId,
       url: tab.url,
       title: tab.title || '',
